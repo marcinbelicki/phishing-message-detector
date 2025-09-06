@@ -1,4 +1,4 @@
-scala-cli, bloop, metals
+# scala-cli, bloop, metals
 .bsp/
 .bloop/
 .metals/
