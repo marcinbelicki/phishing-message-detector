@@ -1,0 +1,86 @@
+\documentclass[crop,tikz, margin=5mm]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\pagecolor[rgb]{0,0,0} %black
+\color[rgb]{0.5,0.5,0.5} %grey
+\makeatletter
+\tikzset{
+    database/.style={
+        path picture={
+            \draw (0, 1.5*\database@segmentheight) circle [x radius=\database@radius,y radius=\database@aspectratio*\database@radius];
+            \draw (-\database@radius, 0.5*\database@segmentheight) arc [start angle=180,end angle=360,x radius=\database@radius, y radius=\database@aspectratio*\database@radius];
+            \draw (-\database@radius,-0.5*\database@segmentheight) arc [start angle=180,end angle=360,x radius=\database@radius, y radius=\database@aspectratio*\database@radius];
+            \draw (-\database@radius,1.5*\database@segmentheight) -- ++(0,-3*\database@segmentheight) arc [start angle=180,end angle=360,x radius=\database@radius, y radius=\database@aspectratio*\database@radius] -- ++(0,3*\database@segmentheight);
+        },
+        minimum width=2*\database@radius + \pgflinewidth,
+        minimum height=3*\database@segmentheight + 2*\database@aspectratio*\database@radius + \pgflinewidth,
+    },
+    database segment height/.store in=\database@segmentheight,
+    database radius/.store in=\database@radius,
+    database aspect ratio/.store in=\database@aspectratio,
+    database segment height=0.1cm,
+    database radius=0.25cm,
+    database aspect ratio=0.35,
+}
+\makeatother
+\begin{document}
+    \begin{tikzpicture}
+        \node[rectangle, rounded corners=0.1cm,draw] (sms-serwis) {
+            \begin{minipage}{3 cm}
+                \begin{center}
+                    Serwis zawierający smsy
+                \end{center}
+            \end{minipage}
+        };
+        \node[right of = sms-serwis, node distance = 10 cm,rectangle, rounded corners=0.1cm,draw] (phishing-detector) {
+            \begin{minipage}{3 cm}
+                \begin{center}
+                    Serwis analizujący smsy
+                \end{center}
+            \end{minipage}
+        };
+    \draw [draw=none] (sms-serwis.east) --++ (0,0.1) coordinate (sms-serwis-above);
+    \draw [draw=none] (phishing-detector.west) --++ (0,0.1) coordinate (phishing-detector-above);
+    \draw[->] (sms-serwis-above.center) -- node[above] {HTTP POST Z SMSEM} (phishing-detector-above.center);
+    \draw [draw=none] (sms-serwis.east) --++ (0,-0.1) coordinate (sms-serwis-below);
+    \draw [draw=none] (phishing-detector.west) --++ (0,-0.1) coordinate (phishing-detector-below);
+    \draw[<-] (sms-serwis-below.center) -- node[below] {ODPOWIEDŹ ZE STATUSEM} (phishing-detector-below.center);
+    \node [below of = phishing-detector, node distance = 3 cm, database, database radius = 1.1 cm, database segment height = 0.5cm] (database) {}; 
+
+    \node [anchor=north] (database-label) at (database.south) {
+            \begin{minipage}{3 cm}
+                \begin{center}
+                Baza danych przechowująca informacje na temat włączenia usługi danego użytkownika
+                \end{center}
+            \end{minipage}
+    } ;
+
+    \draw (database) -- (phishing-detector);
+
+    \draw[draw=none] (phishing-detector.west |-, |- phishing-detector.north) --++ (-0.5,0.5) coordinate (north-west);
+    \draw[draw=none] (phishing-detector.east |-, |- database-label.south) --++ (0.5, -0.5) coordinate (south-east);
+
+    \draw (south-east) rectangle (north-west);
+    \draw[draw=none] (database-label.south) --++ (0, -0.5) node[anchor=north] {Rozwiązanie zadania};
+
+     \node[draw, above of=phishing-detector, rectangle, rounded corners=0.1 cm,node distance = 5cm] (outer-app) {
+            \begin{minipage}{3 cm}
+                \begin{center}
+                    Zewnętrzny serwis analizujący URL
+                \end{center}
+            \end{minipage}
+    };
+
+    \draw[draw=none] (phishing-detector.north) --++ (-0.1,0) coordinate (phishing-detector-left);
+    \draw[draw=none] (outer-app.south) --++ (-0.1,0) coordinate (outer-app-left);
+    \draw[->] (phishing-detector-left) -- node[left] {KOMUNIKACJA HTTP}  (outer-app-left);
+
+    \draw[draw=none] (phishing-detector.north) --++ (0.1,0) coordinate (phishing-detector-right);
+    \draw[draw=none] (outer-app.south) --++ (0.1,0) coordinate (outer-app-right);
+    \draw[<-] (phishing-detector-right) -- (outer-app-right);
+
+
+    \end{tikzpicture}
+\end{document}
