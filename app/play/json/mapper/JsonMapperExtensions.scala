@@ -24,9 +24,7 @@ trait JsonMapperExtensions {
 
     def jacksonJson[A: JavaTypeable](maxLength: Long): BodyParser[A] = when(
       _.contentType.exists(m => m.equalsIgnoreCase("text/json") || m.equalsIgnoreCase("application/json")),
-      tolerantBodyParser[A]("json", maxLength, "Invalid Json") { (_, bytes) =>
-        jsonMapper.readValue[A](bytes.iterator.asInputStream)
-      },
+      tolerantBodyParser[A]("json", maxLength, "Invalid Json")((_, bytes) => jsonMapper.readValue[A](bytes.iterator.asInputStream)),
       createBadResult("Expecting text/json or application/json body", UNSUPPORTED_MEDIA_TYPE)
     )
 
