@@ -9,7 +9,6 @@ scalaVersion := "2.13.16"
 
 libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.2" % Test
-
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "pl.belicki.controllers._"
 
