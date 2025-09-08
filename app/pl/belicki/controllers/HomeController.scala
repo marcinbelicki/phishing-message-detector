@@ -10,7 +10,11 @@ import javax.inject._
 import scala.concurrent.Future
 
 @Singleton
-class HomeController @Inject()(val jsonMapper: JsonMapper with ClassTagExtensions, val controllerComponents: ControllerComponents) extends BaseController with JsonMapperExtensions {
+class HomeController @Inject() (
+    val jsonMapper: JsonMapper with ClassTagExtensions,
+    val controllerComponents: ControllerComponents
+) extends BaseController
+    with JsonMapperExtensions {
   def index(): Action[Message] = Action.async(parse.jacksonJson[Message]) {
     implicit request: Request[Message] =>
       println(request.body)

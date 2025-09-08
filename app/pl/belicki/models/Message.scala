@@ -1,7 +1,7 @@
 package pl.belicki.models
 
 case class Message(
-                    sender: String,
-                    recipient: String,
-                    message: String
-                  )
+    sender: String,
+    recipient: String,
+    message: String
+)
