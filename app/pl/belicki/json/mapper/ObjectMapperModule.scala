@@ -19,7 +19,7 @@ class ObjectMapperModule extends AbstractModule {
 
   private lazy val jsonMapper = builder.build() :: ClassTagExtensions
 
-  override def configure(): Unit = {
+  override def configure(): Unit =
     bind(classOf[JsonMapper]).toInstance(jsonMapper)
-  }
+
 }

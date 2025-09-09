@@ -3,9 +3,11 @@ package play.json.mapper
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.{ClassTagExtensions, JavaTypeable}
 import org.apache.pekko.stream.Materializer
+import org.apache.pekko.util.ByteString
 import play.api.http.Status.UNSUPPORTED_MEDIA_TYPE
-import play.api.http.{HttpErrorHandler, ParserConfiguration}
+import play.api.http.{HttpErrorHandler, ParserConfiguration, Writeable}
 import play.api.libs.Files
+import play.api.libs.json.{JsValue, Writes}
 import play.api.mvc._
 
 import scala.language.implicitConversions
@@ -46,5 +48,10 @@ trait JsonMapperExtensions {
       DefaultMaxTextLength
     )
   }
+
+  implicit def writeable[A: JavaTypeable]: Writeable[A] = Writeable[A](
+    o => ByteString.fromArrayUnsafe(jsonMapper.writeValueAsBytes(o)),
+    Some("application/json")
+  )
 
 }
