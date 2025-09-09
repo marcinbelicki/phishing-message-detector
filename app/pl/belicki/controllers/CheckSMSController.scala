@@ -21,6 +21,6 @@ class CheckSMSController @Inject() (
   def check(): Action[Message] = Action.async(parse.jacksonJson[Message]) {
     implicit request: Request[Message] =>
       println(request.body)
-      Future.successful(Ok(Response(ResponseStatus.NO_THREAT_DETECTED)))
+      Future.successful(Ok(Response(ResponseStatus.SERVICE_TURNED_ON)))
   }
 }
