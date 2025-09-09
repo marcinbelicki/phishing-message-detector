@@ -22,5 +22,4 @@ class ObjectMapperModule extends AbstractModule {
   override def configure(): Unit = {
     bind(classOf[JsonMapper]).toInstance(jsonMapper)
   }
-
 }
