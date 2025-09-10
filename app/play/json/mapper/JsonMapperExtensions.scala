@@ -7,7 +7,6 @@ import org.apache.pekko.util.ByteString
 import play.api.http.Status.UNSUPPORTED_MEDIA_TYPE
 import play.api.http.{HttpErrorHandler, ParserConfiguration, Writeable}
 import play.api.libs.Files
-import play.api.libs.json.{JsValue, Writes}
 import play.api.mvc._
 
 import scala.language.implicitConversions
