@@ -8,7 +8,7 @@ class ClientNumber @Inject()(val databaseConfiguration: DatabaseConfiguration)
   import profile.api._
 
   class Schema(tag: Tag) extends Table[String](tag, "client_number") {
-    def number     = column[String]("number")
+    def number     = column[String]("number", O.PrimaryKey)
     override def * = number
   }
 

@@ -6,6 +6,7 @@ import com.google.inject._
 import pl.belicki.config.ServiceConfig
 import pl.belicki.database.DatabaseConfiguration
 import pl.belicki.database.table.ClientNumber
+import pl.belicki.detector.Detector
 import pl.belicki.models.{Message, Response, ResponseStatus}
 import play.api.http.HttpErrorHandler
 import play.api.libs.json.{JsNull, JsValue}
@@ -22,7 +23,8 @@ class CheckSMSController @Inject() (
     val serviceConfig: ServiceConfig,
     val clientNumber: ClientNumber,
     val databaseConfiguration: DatabaseConfiguration,
-    val httpErrorHandler: HttpErrorHandler
+    val httpErrorHandler: HttpErrorHandler,
+    val detector: Detector
 ) extends BaseController
     with JsonMapperExtensions {
   implicit lazy val ec: ExecutionContext = defaultExecutionContext
@@ -40,12 +42,13 @@ class CheckSMSController @Inject() (
   def upsertNumber(
       number: String
   ): DBIOAction[Int, NoStream, Effect.Write] =
-    clientNumber.query.insertOrUpdate(number)
+    clientNumber.query += (number) // TODO implement upsert
 
   def removeNumber(
       number: String
   ): DBIOAction[Int, NoStream, Effect.Write] =
     clientNumber.query.filter(_.number === number).delete
+
 
   private def errorHandling(implicit
       requestHeader: RequestHeader

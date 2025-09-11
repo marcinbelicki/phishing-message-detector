@@ -5,7 +5,12 @@ import com.fasterxml.jackson.module.scala.{ClassTagExtensions, JavaTypeable}
 import org.apache.pekko.stream.Materializer
 import org.apache.pekko.util.ByteString
 import play.api.http.Status.UNSUPPORTED_MEDIA_TYPE
-import play.api.http.{HttpErrorHandler, ParserConfiguration, Writeable}
+import play.api.http.{
+  HttpErrorHandler,
+  MimeTypes,
+  ParserConfiguration,
+  Writeable
+}
 import play.api.libs.Files
 import play.api.libs.ws.{BodyReadable, BodyWritable, InMemoryBody}
 import play.api.mvc._
@@ -32,7 +37,7 @@ trait JsonMapperExtensions {
     def jacksonJson[A: JavaTypeable](maxLength: Long): BodyParser[A] = when(
       _.contentType.exists(m =>
         m.equalsIgnoreCase("text/json") || m.equalsIgnoreCase(
-          "application/json"
+          MimeTypes.JSON
         )
       ),
       tolerantBodyParser[A]("json", maxLength, "Invalid Json")((_, bytes) =>
@@ -51,7 +56,7 @@ trait JsonMapperExtensions {
 
   implicit def writeable[A: JavaTypeable]: Writeable[A] = Writeable[A](
     o => ByteString.fromArrayUnsafe(jsonMapper.writeValueAsBytes(o)),
-    Some("application/json")
+    Some(MimeTypes.JSON)
   )
 
   implicit def bodyWritable[A: JavaTypeable]: BodyWritable[A] =
@@ -60,10 +65,10 @@ trait JsonMapperExtensions {
         InMemoryBody(
           ByteString.fromString(jsonMapper.writeValueAsString(body))
         ),
-      "application/json"
+      MimeTypes.JSON
     )
 
   implicit def bodyReadable[A: JavaTypeable]: BodyReadable[A] =
-    BodyReadable(response => jsonMapper.readValue[A](response.body))
+    new BodyReadable(response => jsonMapper.readValue[A](response.body))
 
 }

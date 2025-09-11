@@ -5,14 +5,13 @@ import com.fasterxml.jackson.module.scala.ClassTagExtensions
 import com.google.inject.{Inject, Provides}
 import com.google.inject.name.Named
 import pl.belicki.models.{Response, ResponseStatus}
+import play.api.http.{HeaderNames, MimeTypes}
 import play.api.libs.ws.WSClient
 import play.json.mapper.JsonMapperExtensions
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.math.Ordered.orderingToOrdered
 
-@Provides
-@Named("underlying")
 class GoogleWebRiskAPI @Inject() (
     val wsClient: WSClient,
     val externalServiceConfig: ExternalServiceConfig,
@@ -34,8 +33,11 @@ class GoogleWebRiskAPI @Inject() (
       allowScan = true
     )
 
-  def responseBodyToResponse(response: GoogleWebRiskAPI.Response) = {
-    if (response.scores.exists(_.confidenceLevel > MINIMAL_CONFIDENCE)) Response(ResponseStatus.THREAT_DETECTED)
+  private def responseBodyToResponse(
+      response: GoogleWebRiskAPI.Response
+  ): Response = {
+    if (response.scores.exists(_.confidenceLevel > MINIMAL_CONFIDENCE))
+      Response(ResponseStatus.THREAT_DETECTED)
     else Response(ResponseStatus.NO_THREAT_DETECTED)
   }
 
@@ -43,9 +45,14 @@ class GoogleWebRiskAPI @Inject() (
       ec: ExecutionContext
   ): Future[Response] =
     wsClient
-      .url(externalServiceConfig.url).post(createBody(url))
-      .map(_.body[String])
-      .
+      .url(externalServiceConfig.url)
+      .withHttpHeaders(
+        "X-goog-api-key" -> externalServiceConfig.apiKey,
+        HeaderNames.CONTENT_TYPE -> s"${MimeTypes.JSON}; charset=utf-8"
+      )
+      .post(createBody(url))
+      .map(_.body(bodyReadable[GoogleWebRiskAPI.Response]))
+      .map(responseBodyToResponse)
 
 }
 
@@ -58,10 +65,10 @@ object GoogleWebRiskAPI {
 
   case class Response(
       scores: List[Score]
-                     )
+  )
 
   case class Score(
       threatType: String,
       confidenceLevel: ConfidenceLevel
-                  )
+  )
 }

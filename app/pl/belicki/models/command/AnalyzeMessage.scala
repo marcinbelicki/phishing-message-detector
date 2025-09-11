@@ -12,9 +12,10 @@ case class AnalyzeMessage(sender: String, content: String) extends Command {
     import checkSMSController.databaseConfiguration.database
     for {
       serviceEnabled <- database.run(checkSMSController.serviceEnabled(sender))
-    } yield {
-      if (serviceEnabled) Response(ResponseStatus.NO_THREAT_DETECTED)
-      else Response(ResponseStatus.SERVICE_DISABLED)
-    }
+      response <-
+        if (serviceEnabled)
+          checkSMSController.detector.analyzeMessage(content)
+        else Future.successful(Response(ResponseStatus.SERVICE_DISABLED))
+    } yield response
   }
 }
