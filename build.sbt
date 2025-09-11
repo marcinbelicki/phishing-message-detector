@@ -9,6 +9,7 @@ scalaVersion := "2.13.16"
 
 libraryDependencies ++= List(
   guice,
+  ws,
   "org.scalatestplus.play"       %% "scalatestplus-play"   % "7.0.2" % Test,
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.20.0"
 ) ::: List(
@@ -19,4 +20,7 @@ libraryDependencies ++= List(
   "org.testcontainers"  % "postgresql"                 % "1.21.3"  % Test,
   "org.flywaydb"        % "flyway-core"                % "11.12.0",
   "org.flywaydb"        % "flyway-database-postgresql" % "11.12.0" % "runtime"
+) ::: List(
+  "com.github.cb372" %% "scalacache-core"  % "0.28.0",
+  "com.github.cb372" %% "scalacache-guava" % "0.28.0"
 )

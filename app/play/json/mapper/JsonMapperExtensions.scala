@@ -7,6 +7,7 @@ import org.apache.pekko.util.ByteString
 import play.api.http.Status.UNSUPPORTED_MEDIA_TYPE
 import play.api.http.{HttpErrorHandler, ParserConfiguration, Writeable}
 import play.api.libs.Files
+import play.api.libs.ws.{BodyReadable, BodyWritable, InMemoryBody}
 import play.api.mvc._
 
 import scala.language.implicitConversions
@@ -52,5 +53,14 @@ trait JsonMapperExtensions {
     o => ByteString.fromArrayUnsafe(jsonMapper.writeValueAsBytes(o)),
     Some("application/json")
   )
+
+  implicit def bodyWritable[A: JavaTypeable]: BodyWritable[A] =
+    BodyWritable(body =>
+      InMemoryBody(ByteString.fromString(jsonMapper.writeValueAsString(body))),
+      "application/json"
+    )
+
+  implicit def bodyReadable[A: JavaTypeable]: BodyReadable[A] =
+    BodyReadable(_.body)
 
 }

@@ -37,6 +37,16 @@ class CheckSMSController @Inject() (
       .exists
       .result
 
+  def upsertNumber(
+      number: String
+  ): DBIOAction[Int, NoStream, Effect.Write] =
+    clientNumber.query.insertOrUpdate(number)
+
+  def removeNumber(
+      number: String
+  ): DBIOAction[Int, NoStream, Effect.Write] =
+    clientNumber.query.filter(_.number === number).delete
+
   private def errorHandling(implicit
       requestHeader: RequestHeader
   ): PartialFunction[Throwable, Future[Result]] = { case NonFatal(e) =>

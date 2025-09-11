@@ -1,0 +1,32 @@
+package pl.belicki.detector.external
+
+import com.google.common.cache.CacheBuilder
+import com.google.inject.Inject
+import com.google.inject.name.Named
+import pl.belicki.models.Response
+import scalacache.guava.GuavaCache
+import scalacache.{Cache, Entry}
+import scalacache.memoization.memoizeF
+import scalacache.modes.scalaFuture.mode
+
+import scala.concurrent.{ExecutionContext, Future}
+
+class MemoizingExternalService @Inject() (
+    @Named("underlying") val underlying: ExternalService,
+    val externalServiceConfig: ExternalServiceConfig
+) extends ExternalService {
+  private val underlyingGuavaCache = CacheBuilder
+    .newBuilder()
+    .maximumSize(Long.MaxValue)
+    .build[String, Entry[String]]
+  private implicit val scalaCacheGuava: Cache[Response] = GuavaCache(
+    underlyingGuavaCache
+  )
+
+  override def checkUrl(url: String)(implicit
+      ec: ExecutionContext
+  ): Future[Response] =
+    memoizeF[Future, Response](externalServiceConfig.cacheTtl)(
+      underlying.checkUrl(url)
+    )
+}
