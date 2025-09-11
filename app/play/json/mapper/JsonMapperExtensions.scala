@@ -55,12 +55,15 @@ trait JsonMapperExtensions {
   )
 
   implicit def bodyWritable[A: JavaTypeable]: BodyWritable[A] =
-    BodyWritable(body =>
-      InMemoryBody(ByteString.fromString(jsonMapper.writeValueAsString(body))),
+    BodyWritable(
+      body =>
+        InMemoryBody(
+          ByteString.fromString(jsonMapper.writeValueAsString(body))
+        ),
       "application/json"
     )
 
   implicit def bodyReadable[A: JavaTypeable]: BodyReadable[A] =
-    BodyReadable(_.body)
+    BodyReadable(response => jsonMapper.readValue[A](response.body))
 
 }
