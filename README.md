@@ -2,7 +2,7 @@
 
 Aplikacja została napisana w języku Scala z wykorzystaniem Play Framework.
 
-Aplikacja opiera się o założenie że nasłuchuje na requesty w postaci:
+Aplikacja opiera się o założenie, że nasłuchuje na requesty w postaci:
 ```
 curl.exe '-X','POST', 'http://localhost:9000/check'  --header 'Accept: application/json' --header 'Content-type: application/json' --data ' {
   \"sender\": \"234100200300\",
@@ -37,7 +37,7 @@ Zmienne środowiskowe wymagane przez aplikację
 - `APPLICATION_SECRET` - sekret aplikacji, używany przez Play Framework do szyfrowania informacji
 
 W celu zbudowania obrazu i opublikowania go poprzez DockerHub należy 
-- mieć zainstalawaną javę (wersja conajmniej 21)
+- mieć zainstalowaną javę (wersja co najmniej 21)
 - mieć ustawioną zmienną środowiskową `DOCKER_REPOSITORY` z określonym repozytorium
 - wykonać polecenie `sbt "docker:publish"`
 
@@ -46,3 +46,7 @@ W celu uruchomienia aplikacji lokalnie należy
 - aplikacja będzie potem nasłuchiwać na porcie 9000
 
 Aplikacja nasłuchuje domyślnie na porcie 9000. W celu użycia obrazu Docker należy przemapować ten port na wybrany przez siebie port.
+
+## Testy
+- `CheckSMSControllerTest` - sprawdzenie poprawności działania serwisu wykorzystując kontener bazy danych
+- `UrlExtractorTest` - sprawdzenie poprawności wykrywania url we wiadomości
