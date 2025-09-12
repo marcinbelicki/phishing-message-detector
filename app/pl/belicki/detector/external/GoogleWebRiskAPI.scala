@@ -1,10 +1,12 @@
 package pl.belicki.detector.external
 
+import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.ClassTagExtensions
 import com.google.inject.{Inject, Provides}
 import com.google.inject.name.Named
 import pl.belicki.models.{Response, ResponseStatus}
+import play.api.Logging
 import play.api.http.{HeaderNames, MimeTypes}
 import play.api.libs.ws.WSClient
 import play.json.mapper.JsonMapperExtensions
@@ -17,7 +19,8 @@ class GoogleWebRiskAPI @Inject() (
     val externalServiceConfig: ExternalServiceConfig,
     val jsonMapper: JsonMapper with ClassTagExtensions
 ) extends ExternalService
-    with JsonMapperExtensions {
+    with JsonMapperExtensions
+    with Logging {
 
   private val MINIMAL_CONFIDENCE = ConfidenceLevel.VERY_HIGH
 
@@ -43,7 +46,9 @@ class GoogleWebRiskAPI @Inject() (
 
   override def checkUrl(url: String)(implicit
       ec: ExecutionContext
-  ): Future[Response] =
+  ): Future[Response] = {
+    logger.info(s"Checking url: $url")
+
     wsClient
       .url(externalServiceConfig.url)
       .withHttpHeaders(
@@ -51,8 +56,17 @@ class GoogleWebRiskAPI @Inject() (
         HeaderNames.CONTENT_TYPE -> s"${MimeTypes.JSON}; charset=utf-8"
       )
       .post(createBody(url))
+      .flatMap{
+        case body if body.status == 200 => Future.successful(body)
+        case _ => Future.failed(new RuntimeException(s"Couldn't get proper response via ${externalServiceConfig.url}"))
+      }
       .map(_.body(bodyReadable[GoogleWebRiskAPI.Response]))
+      .recoverWith {
+        case jsonParseException: JsonParseException =>
+          Future.failed(new JsonParseException(s"Couldn't read the response from ${externalServiceConfig.url}: ${jsonParseException.getMessage}"))
+      }
       .map(responseBodyToResponse)
+  }
 
 }
 

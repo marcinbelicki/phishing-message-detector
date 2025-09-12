@@ -1,5 +1,6 @@
 package play.json.mapper
 
+import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.{ClassTagExtensions, JavaTypeable}
 import org.apache.pekko.stream.Materializer
@@ -69,6 +70,13 @@ trait JsonMapperExtensions {
     )
 
   implicit def bodyReadable[A: JavaTypeable]: BodyReadable[A] =
-    new BodyReadable(response => jsonMapper.readValue[A](response.body))
+    new BodyReadable({ response =>
+      val body = response.body
+      try jsonMapper.readValue[A](body)
+      catch {
+        case _: JsonParseException =>
+          throw new JsonParseException(body.take(400))
+      }
+    })
 
 }

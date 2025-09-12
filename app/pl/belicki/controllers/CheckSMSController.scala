@@ -8,6 +8,7 @@ import pl.belicki.database.DatabaseConfiguration
 import pl.belicki.database.table.ClientNumber
 import pl.belicki.detector.Detector
 import pl.belicki.models.{Message, Response, ResponseStatus}
+import play.api.{Logger, Logging}
 import play.api.http.HttpErrorHandler
 import play.api.libs.json.{JsNull, JsValue}
 import play.api.mvc._
@@ -26,7 +27,8 @@ class CheckSMSController @Inject() (
     val httpErrorHandler: HttpErrorHandler,
     val detector: Detector
 ) extends BaseController
-    with JsonMapperExtensions {
+    with JsonMapperExtensions
+    with Logging {
   implicit lazy val ec: ExecutionContext = defaultExecutionContext
 
   import databaseConfiguration.profile.api._
@@ -41,14 +43,23 @@ class CheckSMSController @Inject() (
 
   def upsertNumber(
       number: String
-  ): DBIOAction[Int, NoStream, Effect.Write] =
-    clientNumber.query += (number) // TODO implement upsert
+  ): DBIOAction[
+    Boolean,
+    NoStream,
+    Effect.Read with Effect.Write with Effect.Transactional
+  ] = {
+    for {
+      exists <- clientNumber.query.filter(_.number === number).exists.result
+      _ <-
+        if (exists) DBIO.successful(null)
+        else clientNumber.query += number
+    } yield exists
+  }.transactionally
 
   def removeNumber(
       number: String
   ): DBIOAction[Int, NoStream, Effect.Write] =
     clientNumber.query.filter(_.number === number).delete
-
 
   private def errorHandling(implicit
       requestHeader: RequestHeader
@@ -58,6 +69,7 @@ class CheckSMSController @Inject() (
 
   def check(): Action[Message] = Action.async(parse.jacksonJson[Message]) {
     implicit request: Request[Message] =>
+      logger.info(s"Received request: $request")
       serviceConfig
         .toCommand(request.body)
         .execute(this)

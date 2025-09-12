@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder
 import com.google.inject.{Inject, Provides}
 import com.google.inject.name.Named
 import pl.belicki.models.Response
+import play.api.Logging
 import scalacache.guava.GuavaCache
 import scalacache.{Cache, Entry}
 import scalacache.memoization.memoizeF
@@ -14,7 +15,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class MemoizingExternalService @Inject() (
     @Named("underlying") val underlying: ExternalService,
     val externalServiceConfig: ExternalServiceConfig
-) extends ExternalService {
+) extends ExternalService with Logging {
   private val underlyingGuavaCache = CacheBuilder
     .newBuilder()
     .maximumSize(Long.MaxValue)
@@ -25,8 +26,10 @@ class MemoizingExternalService @Inject() (
 
   override def checkUrl(url: String)(implicit
       ec: ExecutionContext
-  ): Future[Response] =
+  ): Future[Response] = {
+    logger.info(s"Checking url: $url")
     memoizeF[Future, Response](Some(externalServiceConfig.cacheTtl))(
       underlying.checkUrl(url)
     )
+  }
 }
