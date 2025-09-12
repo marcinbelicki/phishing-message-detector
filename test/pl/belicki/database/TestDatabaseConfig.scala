@@ -53,10 +53,9 @@ object TestDatabaseConfig {
         "profile",
         ConfigValueFactory.fromAnyRef("slick.jdbc.PostgresProfile$")
       )
-      .withValue("db.connectionPool",
-        ConfigValueFactory.fromAnyRef("HikariCP")
-      )
-      .withValue("db.dataSourceClass",
+      .withValue("db.connectionPool", ConfigValueFactory.fromAnyRef("HikariCP"))
+      .withValue(
+        "db.dataSourceClass",
         ConfigValueFactory.fromAnyRef("org.postgresql.ds.PGSimpleDataSource")
       )
   }

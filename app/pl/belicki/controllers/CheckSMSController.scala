@@ -23,7 +23,6 @@ class CheckSMSController @Inject() (
     val serviceConfig: ServiceConfig,
     val clientNumber: ClientNumber,
     val databaseConfiguration: DatabaseConfiguration,
-    val httpErrorHandler: HttpErrorHandler,
     val detector: Detector
 ) extends BaseController
     with JsonMapperExtensions
@@ -60,12 +59,11 @@ class CheckSMSController @Inject() (
   ): DBIOAction[Int, NoStream, Effect.Write] =
     clientNumber.query.filter(_.number === number).delete
 
-  private def errorHandling(implicit
-      requestHeader: RequestHeader
-  ): PartialFunction[Throwable, Future[Result]] = { case NonFatal(e) =>
-    Future.successful(
-      InternalServerError(CheckSMSController.ErrorMessageOnly(e.getMessage))
-    )
+  private def errorHandling: PartialFunction[Throwable, Future[Result]] = {
+    case NonFatal(e) =>
+      Future.successful(
+        InternalServerError(CheckSMSController.ErrorMessageOnly(e.getMessage))
+      )
   }
 
   def check(): Action[Message] = Action.async(parse.jacksonJson[Message]) {

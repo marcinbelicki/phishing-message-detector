@@ -6,8 +6,12 @@ import org.scalatest.Assertion
 import org.scalatestplus.play._
 import org.scalatestplus.play.guice._
 import pl.belicki.controllers.CheckSMSController
-import pl.belicki.database.{ExternalServiceConfigTest, TestDatabaseConfig, TestServiceConfig}
-import pl.belicki.detector.external.{ExternalService, ExternalServiceConfig}
+import pl.belicki.database.{
+  ExternalServiceConfigTest,
+  TestDatabaseConfig,
+  TestServiceConfig
+}
+import pl.belicki.detector.external.ExternalService
 import pl.belicki.models.{Message, Response, ResponseStatus}
 import play.api.Application
 import play.api.Play.materializer
@@ -65,7 +69,6 @@ class CheckSMSControllerTest
   "CheckSMSController POST" should {
 
     "response with proper statuses" in {
-
 
       // when
       val serviceTurnedOn = sendMessage(

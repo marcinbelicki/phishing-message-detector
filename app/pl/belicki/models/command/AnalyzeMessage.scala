@@ -11,7 +11,9 @@ case class AnalyzeMessage(recipient: String, content: String) extends Command {
   )(implicit ec: ExecutionContext): Future[Response] = {
     import checkSMSController.databaseConfiguration.database
     for {
-      serviceEnabled <- database.run(checkSMSController.serviceEnabled(recipient))
+      serviceEnabled <- database.run(
+        checkSMSController.serviceEnabled(recipient)
+      )
       response <-
         if (serviceEnabled)
           checkSMSController.detector.analyzeMessage(content)

@@ -6,7 +6,7 @@ import pl.belicki.detector.external.{
   ExternalServiceConfig,
   MemoizingExternalService
 }
-import play.api.inject
+
 import play.api.inject.{Binding, bind}
 
 import scala.language.postfixOps
