@@ -1,9 +1,19 @@
+import com.typesafe.sbt.packager.docker.{
+  DockerChmodType,
+  DockerPermissionStrategy
+}
+
 name         := """phishing-message-detector"""
 organization := "pl.belicki"
 
 version := "1.0-SNAPSHOT"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
+
+dockerBaseImage          := "openjdk:21"
+dockerChmodType          := DockerChmodType.UserGroupWriteExecute
+dockerPermissionStrategy := DockerPermissionStrategy.CopyChown
+dockerRepository         := sys.env.get("DOCKER_REPOSITORY")
 
 scalaVersion := "2.13.16"
 

@@ -64,7 +64,9 @@ class CheckSMSController @Inject() (
   private def errorHandling(implicit
       requestHeader: RequestHeader
   ): PartialFunction[Throwable, Future[Result]] = { case NonFatal(e) =>
-    httpErrorHandler.onServerError(requestHeader, e)
+    Future.successful(
+      InternalServerError(CheckSMSController.ErrorMessageOnly(e.getMessage))
+    )
   }
 
   def check(): Action[Message] = Action.async(parse.jacksonJson[Message]) {
@@ -76,4 +78,10 @@ class CheckSMSController @Inject() (
         .map(Ok(_))
         .recoverWith(errorHandling)
   }
+}
+
+object CheckSMSController {
+  case class ErrorMessageOnly(
+      message: String
+  )
 }
