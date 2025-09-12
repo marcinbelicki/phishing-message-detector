@@ -2,6 +2,28 @@
 
 Aplikacja została napisana w języku Scala z wykorzystaniem Play Framework.
 
+Aplikacja opiera się o założenie że nasłuchuje na requesty w postaci:
+```
+curl.exe '-X','POST', 'http://localhost:9000/check'  --header 'Accept: application/json' --header 'Content-type: application/json' --data ' {
+  \"sender\": \"234100200300\",
+  \"recipient\": \"48700800999\",
+  \"message\": \"Dzieą dobry. W związku z audytem nadzór finansowy w naszym banku proszą o potwierdzanie danych pod adresem: https://www.m-bonk.pl.ng/personal-data\"
+}'
+```
+Gdzie body ma postać wiadomości SMS opisanej w treści zadania.
+
+W przypadku, kiedy usługa jest włączona i we wiadomości zostanie znalezione zagrożenie aplikacja odeśle wiadomość `{"status":"THREAT_DETECTED"}`
+
+W przypadku, kiedy usługa jest włączona i we wiadomości nie zostanie znalezione zagrożenie aplikacja odeśle wiadomość `{"status":"NO_THREAT_DETECTED"}`
+
+W przypadku, kiedy pod określony numer (`SERVICE_PHONE_NUMBER`) zostanie wysłana wiadomość o treści `START` aplikacja zapamięta wybór i odeśle wiadomość `{"status":"SERVICE_TURNED_ON"}`
+
+W przypadku, kiedy pod określony numer (`SERVICE_PHONE_NUMBER`) zostanie wysłana wiadomość o treści `STOP` aplikacja zapamięta wybór i odeśle wiadomość `{"status":"SERVICE_TURNED_OFF"}`
+
+W przypadku, kiedy usługa jest wyłączona i SMS nie będzie zawierał żadnej z w/w komend aplikacja odeśle wiadomość `{"status":"SERVICE_DISABLED"}`
+
+## Wymagania
+
 Do działania aplikacja potrzebuje zainstalowanej bazy danych POSTGRES 17.2 o parametrach wymienionych poniżej.
 
 Zmienne środowiskowe wymagane przez aplikację
