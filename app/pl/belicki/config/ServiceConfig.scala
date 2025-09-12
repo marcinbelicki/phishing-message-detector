@@ -7,7 +7,7 @@ case class ServiceConfig(
     servicePhoneNumber: String
 ) {
   def toCommand(message: Message): Command = {
-    def analyzeMessage = AnalyzeMessage(message.sender, message.message)
+    def analyzeMessage = AnalyzeMessage(message.recipient, message.message)
 
     if (message.recipient != servicePhoneNumber) return analyzeMessage
     if (message.message == Start.COMMAND) return Start(message.sender)

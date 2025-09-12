@@ -17,6 +17,16 @@ dockerRepository         := sys.env.get("DOCKER_REPOSITORY")
 
 scalaVersion := "2.13.16"
 
+semanticdbEnabled := true
+semanticdbVersion := scalafixSemanticdb.revision
+scalacOptions += {
+  if (scalaVersion.value.startsWith("2.12"))
+    "-Ywarn-unused-import"
+  else
+    "-Wunused:imports"
+
+}
+
 libraryDependencies ++= List(
   guice,
   ws,

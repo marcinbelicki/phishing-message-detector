@@ -16,8 +16,6 @@ import play.api.libs.Files
 import play.api.libs.ws.{BodyReadable, BodyWritable, InMemoryBody}
 import play.api.mvc._
 
-import scala.language.implicitConversions
-
 trait JsonMapperExtensions {
   def jsonMapper: JsonMapper with ClassTagExtensions
 

@@ -1,6 +1,5 @@
 package pl.belicki.database
 
-
 import com.typesafe.config.Config
 import org.flywaydb.core.Flyway
 import slick.basic.DatabaseConfig

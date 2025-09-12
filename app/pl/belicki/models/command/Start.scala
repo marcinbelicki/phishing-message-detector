@@ -6,7 +6,9 @@ import pl.belicki.models.{Response, ResponseStatus}
 import scala.concurrent.{ExecutionContext, Future}
 
 case class Start(phoneNumber: String) extends Command {
-  override def execute(checkSMSController: CheckSMSController)(implicit ec: ExecutionContext): Future[Response] = {
+  override def execute(
+      checkSMSController: CheckSMSController
+  )(implicit ec: ExecutionContext): Future[Response] = {
     import checkSMSController.databaseConfiguration.database
     for {
       _ <- database.run(checkSMSController.upsertNumber(phoneNumber))

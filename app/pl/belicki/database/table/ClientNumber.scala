@@ -3,7 +3,7 @@ package pl.belicki.database.table
 import com.google.inject.Inject
 import pl.belicki.database.DatabaseConfiguration
 
-class ClientNumber @Inject()(val databaseConfiguration: DatabaseConfiguration)
+class ClientNumber @Inject() (val databaseConfiguration: DatabaseConfiguration)
     extends TableData {
   import profile.api._
 

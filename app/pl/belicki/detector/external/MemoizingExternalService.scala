@@ -1,7 +1,7 @@
 package pl.belicki.detector.external
 
 import com.google.common.cache.CacheBuilder
-import com.google.inject.{Inject, Provides}
+import com.google.inject.Inject
 import com.google.inject.name.Named
 import pl.belicki.models.Response
 import play.api.Logging
@@ -15,7 +15,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class MemoizingExternalService @Inject() (
     @Named("underlying") val underlying: ExternalService,
     val externalServiceConfig: ExternalServiceConfig
-) extends ExternalService with Logging {
+) extends ExternalService
+    with Logging {
   private val underlyingGuavaCache = CacheBuilder
     .newBuilder()
     .maximumSize(Long.MaxValue)

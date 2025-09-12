@@ -10,9 +10,9 @@ case class Stop(phoneNumber: String) extends Command {
       ec: ExecutionContext
   ): Future[Response] = {
     import checkSMSController.databaseConfiguration.database
-   for {
-     _ <- database.run(checkSMSController.removeNumber(phoneNumber))
-   } yield Response(ResponseStatus.SERVICE_TURNED_OFF)
+    for {
+      _ <- database.run(checkSMSController.removeNumber(phoneNumber))
+    } yield Response(ResponseStatus.SERVICE_TURNED_OFF)
   }
 }
 

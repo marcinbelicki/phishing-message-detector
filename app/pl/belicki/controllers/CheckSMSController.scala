@@ -7,10 +7,9 @@ import pl.belicki.config.ServiceConfig
 import pl.belicki.database.DatabaseConfiguration
 import pl.belicki.database.table.ClientNumber
 import pl.belicki.detector.Detector
-import pl.belicki.models.{Message, Response, ResponseStatus}
-import play.api.{Logger, Logging}
+import pl.belicki.models.Message
+import play.api.Logging
 import play.api.http.HttpErrorHandler
-import play.api.libs.json.{JsNull, JsValue}
 import play.api.mvc._
 import play.json.mapper.JsonMapperExtensions
 

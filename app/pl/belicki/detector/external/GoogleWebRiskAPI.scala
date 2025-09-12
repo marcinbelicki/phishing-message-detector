@@ -3,8 +3,8 @@ package pl.belicki.detector.external
 import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.ClassTagExtensions
-import com.google.inject.{Inject, Provides}
-import com.google.inject.name.Named
+import com.google.inject.Inject
+
 import pl.belicki.models.{Response, ResponseStatus}
 import play.api.Logging
 import play.api.http.{HeaderNames, MimeTypes}
@@ -52,18 +52,26 @@ class GoogleWebRiskAPI @Inject() (
     wsClient
       .url(externalServiceConfig.url)
       .withHttpHeaders(
-        "X-goog-api-key" -> externalServiceConfig.apiKey,
+        "X-goog-api-key"         -> externalServiceConfig.apiKey,
         HeaderNames.CONTENT_TYPE -> s"${MimeTypes.JSON}; charset=utf-8"
       )
       .post(createBody(url))
-      .flatMap{
+      .flatMap {
         case body if body.status == 200 => Future.successful(body)
-        case _ => Future.failed(new RuntimeException(s"Couldn't get proper response via ${externalServiceConfig.url}"))
+        case _ =>
+          Future.failed(
+            new RuntimeException(
+              s"Couldn't get proper response via ${externalServiceConfig.url}"
+            )
+          )
       }
       .map(_.body(bodyReadable[GoogleWebRiskAPI.Response]))
-      .recoverWith {
-        case jsonParseException: JsonParseException =>
-          Future.failed(new JsonParseException(s"Couldn't read the response from ${externalServiceConfig.url}: ${jsonParseException.getMessage}"))
+      .recoverWith { case jsonParseException: JsonParseException =>
+        Future.failed(
+          new JsonParseException(
+            s"Couldn't read the response from ${externalServiceConfig.url}: ${jsonParseException.getMessage}"
+          )
+        )
       }
       .map(responseBodyToResponse)
   }

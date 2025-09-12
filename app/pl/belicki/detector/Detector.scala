@@ -1,6 +1,5 @@
 package pl.belicki.detector
 
-import com.fasterxml.jackson.core.JsonParseException
 import com.google.inject.Inject
 import com.google.inject.name.Named
 import org.apache.pekko.actor.ActorSystem
